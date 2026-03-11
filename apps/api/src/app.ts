@@ -1,7 +1,7 @@
 ﻿import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth/index.js";
-import refrigerantLogRoutes from "./routes/refrigerant-logs.js";
+import refrigerantLogRoutes from "./routes/refrigerant-logs/index.js";
 
 export const app = express();
 
