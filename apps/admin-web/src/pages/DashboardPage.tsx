@@ -2,79 +2,110 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { API_BASE, getStoredToken } from "../lib/auth";
 
+type DashboardStats = {
+  totalLogs: number;
+  logsToday: number;
+  activeTechs: number;
+};
+
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: string;
+}) {
+  return (
+    <div className="rounded-[24px] border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
+      <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-white/55">
+        {label}
+      </div>
+      <div className={`mt-4 text-4xl font-black tracking-tight text-white ${accent ?? ""}`}>
+        {value}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
-    const [stats, setStats] = useState<{
-        totalLogs: number;
-        logsToday: number;
-        activeTechs: number;
-    } | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        async function loadStats() {
-            try {
-                setLoading(true);
-                setError("");
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        setLoading(true);
+        setError("");
 
-                const token = getStoredToken();
+        const token = getStoredToken();
 
-                const res = await fetch(`${API_BASE}/api/refrigerant-logs/admin/stats/summary`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+        const res = await fetch(`${API_BASE}/api/refrigerant-logs/admin/stats/summary`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-                const data = await res.json();
+        const data = await res.json();
 
-                if (!res.ok) {
-                    setError(data?.error || "Failed to load dashboard stats.");
-                    return;
-                }
-
-                setStats(data);
-            } catch {
-                setError("Could not reach API.");
-            } finally {
-                setLoading(false);
-            }
+        if (!res.ok) {
+          setError(data?.error || "Failed to load dashboard stats.");
+          return;
         }
 
-        loadStats();
-    }, []);
+        setStats(data);
+      } catch {
+        setError("Could not reach API.");
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    return (
-        <Layout>
-            <h1>Dashboard</h1>
+    loadStats();
+  }, []);
 
-            {loading ? <p>Loading dashboard...</p> : null}
-            {error ? <p style={{ color: "#fca5a5" }}>{error}</p> : null}
+  return (
+    <Layout
+      kicker="Urban Mechanical"
+      title="Dashboard"
+      subtitle="Quick view of refrigerant activity, technician usage, and today’s field submissions."
+    >
+      {loading ? (
+        <div className="rounded-[24px] border border-white/10 bg-[#1a1a1a] p-5 text-white/70 shadow-2xl">
+          Loading dashboard...
+        </div>
+      ) : null}
 
-            {!loading && !error && stats ? (
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                        gap: 16,
-                        marginTop: 16,
-                    }}
-                >
-                    <div style={{ background: "#111827", border: "1px solid #1f2937", borderRadius: 12, padding: 16 }}>
-                        <div style={{ fontSize: 14, color: "#94a3b8" }}>Total Logs</div>
-                        <div style={{ fontSize: 28, fontWeight: 700 }}>{stats.totalLogs}</div>
-                    </div>
+      {error ? (
+        <div className="rounded-[24px] border border-red-500/20 bg-red-500/10 p-5 text-sm font-medium text-red-200">
+          {error}
+        </div>
+      ) : null}
 
-                    <div style={{ background: "#111827", border: "1px solid #1f2937", borderRadius: 12, padding: 16 }}>
-                        <div style={{ fontSize: 14, color: "#94a3b8" }}>Logs Today</div>
-                        <div style={{ fontSize: 28, fontWeight: 700 }}>{stats.logsToday}</div>
-                    </div>
+      {!loading && !error && stats ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <StatCard label="Total Logs" value={stats.totalLogs} />
+          <StatCard label="Logs Today" value={stats.logsToday} accent="text-orange-300" />
+          <StatCard label="Active Techs" value={stats.activeTechs} />
+        </div>
+      ) : null}
 
-                    <div style={{ background: "#111827", border: "1px solid #1f2937", borderRadius: 12, padding: 16 }}>
-                        <div style={{ fontSize: 14, color: "#94a3b8" }}>Active Techs</div>
-                        <div style={{ fontSize: 28, fontWeight: 700 }}>{stats.activeTechs}</div>
-                    </div>
-                </div>
-            ) : null}
-        </Layout>
-    );
+      {!loading && !error ? (
+        <div className="mt-6 rounded-[24px] border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
+          <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
+            Snapshot
+          </div>
+          <h2 className="mt-3 text-2xl font-black tracking-tight text-white">
+            Operations at a glance
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-white/65 sm:text-base">
+            This dashboard is intentionally simple right now. Next step is recent activity,
+            log trend visibility, and direct drill-down into technician submissions.
+          </p>
+        </div>
+      ) : null}
+    </Layout>
+  );
 }
