@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { API_BASE, getStoredToken } from "../lib/auth";
 
@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadDashboard() {
       try {
         setLoading(true);
         setError("");
@@ -63,12 +63,11 @@ export default function DashboardPage() {
       }
     }
 
-    loadStats();
+    loadDashboard();
   }, []);
 
   return (
     <Layout
-      kicker="Urban Mechanical"
       title="Dashboard"
       subtitle="Quick view of refrigerant activity, technician usage, and today’s field submissions."
     >

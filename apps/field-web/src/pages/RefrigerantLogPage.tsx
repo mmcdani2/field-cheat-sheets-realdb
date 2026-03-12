@@ -14,7 +14,10 @@ function cleanString(value: string) {
 }
 
 export default function RefrigerantLogPage() {
-  const [form, setForm] = useState<FormState>(initialState);
+  const [form, setForm] = useState<FormState>({
+    ...initialState,
+    companyKey: "urban-mechanical",
+  });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -56,7 +59,7 @@ export default function RefrigerantLogPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          companyKey: form.companyKey,
+          companyKey: "urban-mechanical",
           customerName: cleanString(form.customerName),
           jobNumber: cleanString(form.jobNumber),
           city: cleanString(form.city),
@@ -78,7 +81,10 @@ export default function RefrigerantLogPage() {
       }
 
       setMessage("Refrigerant log submitted.");
-      setForm(initialState);
+      setForm({
+        ...initialState,
+        companyKey: "urban-mechanical",
+      });
     } catch {
       setError("Could not reach API.");
     } finally {
@@ -88,9 +94,9 @@ export default function RefrigerantLogPage() {
 
   return (
     <FieldLayout
-      kicker="Urban Mechanical"
+      kicker="BossOS Field"
       title="New Refrigerant Log"
-      subtitle="Enter job details and submit refrigerant activity from the field."
+      subtitle="Enter job details and submit HVAC refrigerant activity from the field."
     >
       <form onSubmit={handleSubmit} className="grid gap-5">
         <JobInfoSection form={form} update={update} />

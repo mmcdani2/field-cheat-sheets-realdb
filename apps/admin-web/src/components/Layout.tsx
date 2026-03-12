@@ -1,6 +1,7 @@
-﻿import React, { useMemo } from 'react'
+﻿import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { clearStoredToken, getStoredToken } from '../lib/auth'
+import { useCompany } from '../context/CompanyContext'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -20,17 +21,21 @@ function navClass (isActive: boolean) {
 
 export default function Layout ({
   children,
-  kicker = 'Urban Admin',
+  kicker,
   title,
   subtitle
 }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const token = useMemo(() => getStoredToken(), [location.pathname])
+  const token = getStoredToken()
+  const { company } = useCompany()
 
   const isDashboard = location.pathname === '/dashboard'
-  const isLogs = location.pathname.startsWith('/logs')
+  const isReports = location.pathname.startsWith('/logs')
+  const isDivisions = location.pathname === '/divisions'
   const isSettings = location.pathname === '/settings'
+
+  const resolvedKicker = kicker || company?.name || 'BossOS'
 
   return (
     <div className='min-h-screen bg-black text-white'>
@@ -40,10 +45,10 @@ export default function Layout ({
             <div className='flex flex-wrap items-start gap-3'>
               <div>
                 <p className='text-[12px] font-bold uppercase tracking-[0.28em] text-orange-400'>
-                  {kicker}
+                  {resolvedKicker}
                 </p>
                 <div className='mt-2 text-lg font-black tracking-tight text-white sm:text-xl'>
-                  Field Admin
+                  BossOS Admin
                 </div>
               </div>
 
@@ -65,8 +70,11 @@ export default function Layout ({
                 <Link to='/dashboard' className={navClass(isDashboard)}>
                   Dashboard
                 </Link>
-                <Link to='/logs' className={navClass(isLogs)}>
-                  Logs
+                <Link to='/logs' className={navClass(isReports)}>
+                  Reports
+                </Link>
+                <Link to='/divisions' className={navClass(isDivisions)}>
+                  Divisions
                 </Link>
                 <Link to='/settings' className={navClass(isSettings)}>
                   Settings

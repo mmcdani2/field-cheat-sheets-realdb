@@ -1,9 +1,9 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "../../db/index.js";
-import { users } from "../../db/schema.js";
+import { divisionModules, divisions, modules, users } from "../../db/schema.js";
 import {
   requireAuth,
   type AuthedRequest,
@@ -76,6 +76,72 @@ router.get("/me", requireAuth, async (req: AuthedRequest, res) => {
   return res.json({
     user: req.authUser,
   });
+});
+
+router.get("/launcher", requireAuth, async (_req: AuthedRequest, res) => {
+  try {
+    const rows = await db
+      .select({
+        divisionId: divisions.id,
+        divisionKey: divisions.key,
+        divisionName: divisions.name,
+        divisionIsActive: divisions.isActive,
+        moduleId: modules.id,
+        moduleKey: modules.key,
+        moduleName: modules.name,
+        moduleCategory: modules.category,
+        moduleIsActive: modules.isActive,
+        isEnabled: divisionModules.isEnabled,
+      })
+      .from(divisionModules)
+      .innerJoin(divisions, eq(divisionModules.divisionId, divisions.id))
+      .innerJoin(modules, eq(divisionModules.moduleId, modules.id))
+      .orderBy(asc(divisions.name), asc(modules.name));
+
+    const divisionMap = new Map<
+      string,
+      {
+        id: string;
+        key: string;
+        name: string;
+        modules: Array<{
+          id: string;
+          key: string;
+          name: string;
+          category: string;
+        }>;
+      }
+    >();
+
+    for (const row of rows) {
+      if (!row.divisionIsActive || !row.moduleIsActive || !row.isEnabled) {
+        continue;
+      }
+
+      if (!divisionMap.has(row.divisionId)) {
+        divisionMap.set(row.divisionId, {
+          id: row.divisionId,
+          key: row.divisionKey,
+          name: row.divisionName,
+          modules: [],
+        });
+      }
+
+      divisionMap.get(row.divisionId)!.modules.push({
+        id: row.moduleId,
+        key: row.moduleKey,
+        name: row.moduleName,
+        category: row.moduleCategory,
+      });
+    }
+
+    return res.json({
+      divisions: Array.from(divisionMap.values()),
+    });
+  } catch (error) {
+    console.error("Launcher error:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
 });
 
 export default router;

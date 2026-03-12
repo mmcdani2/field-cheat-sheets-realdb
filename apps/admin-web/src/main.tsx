@@ -3,16 +3,19 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 import { getStoredToken } from "./lib/auth";
+import { CompanyProvider } from "./context/CompanyContext";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import LogsPage from "./pages/LogsPage";
 import LogDetailPage from "./pages/LogDetailPage";
+import DivisionsPage from "./pages/DivisionsPage";
+import DivisionDetailPage from "./pages/DivisionDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = getStoredToken();
   if (!token) return <Navigate to="/login" replace />;
-  return <>{children}</>;
+  return <CompanyProvider>{children}</CompanyProvider>;
 }
 
 function App() {
@@ -42,6 +45,22 @@ function App() {
           element={
             <RequireAuth>
               <LogDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/divisions"
+          element={
+            <RequireAuth>
+              <DivisionsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/divisions/:id"
+          element={
+            <RequireAuth>
+              <DivisionDetailPage />
             </RequireAuth>
           }
         />

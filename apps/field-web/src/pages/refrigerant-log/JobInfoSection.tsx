@@ -1,4 +1,4 @@
-﻿import { FieldInput, FieldLabel, FieldSelect } from "./RefrigerantLogFormFields";
+﻿import { FieldInput, FieldLabel } from "./RefrigerantLogFormFields";
 import type { FormState } from "./RefrigerantLogFormFields";
 
 type Props = {
@@ -8,17 +8,15 @@ type Props = {
 
 export default function JobInfoSection({ form, update }: Props) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
+    <div className="rounded-[24px] border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
       <div className="grid gap-4">
-        <div className="grid gap-2">
-          <FieldLabel>Company</FieldLabel>
-          <FieldSelect
-            value={form.companyKey}
-            onChange={(e) => update("companyKey", e.target.value)}
-          >
-            <option value="urban-mechanical">Urban Mechanical</option>
-            <option value="urban-spray-foam">Urban Spray Foam</option>
-          </FieldSelect>
+        <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4">
+          <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/45">
+            Division
+          </div>
+          <div className="mt-2 text-base font-semibold text-white">
+            HVAC
+          </div>
         </div>
 
         <div className="grid gap-2">

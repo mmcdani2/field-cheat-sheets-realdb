@@ -5,6 +5,7 @@ import './index.css'
 import { getStoredToken } from './lib/auth'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import DivisionModulesPage from './pages/DivisionModulesPage'
 import RefrigerantLogPage from './pages/RefrigerantLogPage'
 import MyLogsPage from './pages/MyLogsPage'
 import LogDetailPage from './pages/LogDetailPage'
@@ -26,6 +27,14 @@ function App () {
           element={
             <RequireAuth>
               <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/division/:divisionKey'
+          element={
+            <RequireAuth>
+              <DivisionModulesPage />
             </RequireAuth>
           }
         />

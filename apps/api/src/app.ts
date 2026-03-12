@@ -4,6 +4,7 @@ import express from "express";
 import authRoutes from "./routes/auth/index.js";
 import refrigerantLogRoutes from "./routes/refrigerant-logs/index.js";
 import companyRoutes from "./routes/company/index.js";
+import divisionRoutes from "./routes/divisions/index.js";
 
 export const app = express();
 
@@ -23,3 +24,4 @@ app.get("/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/refrigerant-logs", refrigerantLogRoutes);
 app.use("/api/company", companyRoutes);
+app.use("/api/divisions", divisionRoutes);
