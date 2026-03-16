@@ -196,7 +196,7 @@ async function main() {
   );
 
   await ensureDivisionModule(hvacDivision.id, refrigerantLogModule.id, true);
-  await ensureDivisionModule(sprayFoamDivision.id, sprayFoamJobLogModule.id, false);
+  await ensureDivisionModule(sprayFoamDivision.id, sprayFoamJobLogModule.id, true);
 
   await ensureAdminUser();
 

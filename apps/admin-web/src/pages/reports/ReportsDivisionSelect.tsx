@@ -27,7 +27,7 @@ export default function ReportsDivisionSelect({ divisions, value, onChange }: Pr
         className="h-14 w-full max-w-sm rounded-2xl border border-white/10 bg-[#0d0d0d] px-4 text-base text-white outline-none transition focus:border-orange-400/60"
       >
         {divisions.map((division) => (
-          <option key={division.id} value={division.key}>
+          <option key={division.id} value={division.id}>
             {division.name}
           </option>
         ))}

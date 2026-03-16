@@ -1,4 +1,4 @@
-﻿import { pgTable, uuid, varchar, boolean, timestamp, decimal, text, index } from "drizzle-orm/pg-core";
+﻿import { pgTable, uuid, varchar, boolean, timestamp, decimal, text, index, integer } from "drizzle-orm/pg-core";
 
 export const companies = pgTable("companies", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -80,3 +80,40 @@ export const refrigerantLogs = pgTable("refrigerant_logs", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
 });
+
+export const sprayFoamJobLogs = pgTable("spray_foam_job_logs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  companyKey: varchar("company_key", { length: 50 }).notNull(),
+  divisionKey: varchar("division_key", { length: 100 }),
+  techNameSnapshot: varchar("tech_name_snapshot", { length: 255 }).notNull(),
+  customerName: varchar("customer_name", { length: 255 }),
+  jobNumber: varchar("job_number", { length: 100 }),
+  city: varchar("city", { length: 120 }),
+  state: varchar("state", { length: 50 }),
+  notes: text("notes"),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  divisionIdx: index("spray_foam_job_logs_division_key_idx").on(table.divisionKey),
+  submittedIdx: index("spray_foam_job_logs_submitted_at_idx").on(table.submittedAt)
+}));
+
+export const sprayFoamJobLogLines = pgTable("spray_foam_job_log_lines", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  jobLogId: uuid("job_log_id").notNull().references(() => sprayFoamJobLogs.id),
+  lineNumber: integer("line_number").notNull(),
+  areaDescription: varchar("area_description", { length: 255 }).notNull(),
+  jobType: varchar("job_type", { length: 120 }).notNull(),
+  foamType: varchar("foam_type", { length: 120 }).notNull(),
+  squareFeet: decimal("square_feet", { precision: 10, scale: 2 }),
+  thicknessInches: decimal("thickness_inches", { precision: 10, scale: 2 }),
+  boardFeet: decimal("board_feet", { precision: 12, scale: 2 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull()
+}, (table) => ({
+  jobLogIdx: index("spray_foam_job_log_lines_job_log_id_idx").on(table.jobLogId),
+  jobLogLineIdx: index("spray_foam_job_log_lines_job_log_line_idx").on(table.jobLogId, table.lineNumber)
+}));

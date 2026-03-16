@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import DivisionModulesPage from './pages/DivisionModulesPage'
 import RefrigerantLogPage from './pages/RefrigerantLogPage'
+import SprayFoamJobLogPage from './pages/SprayFoamJobLogPage'
 import MyLogsPage from './pages/MyLogsPage'
 import LogDetailPage from './pages/LogDetailPage'
 
@@ -43,6 +44,14 @@ function App () {
           element={
             <RequireAuth>
               <RefrigerantLogPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='/spray-foam-job-log'
+          element={
+            <RequireAuth>
+              <SprayFoamJobLogPage />
             </RequireAuth>
           }
         />

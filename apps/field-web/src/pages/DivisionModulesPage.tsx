@@ -21,6 +21,8 @@ function moduleRoute(key: string) {
   switch (key) {
     case "refrigerant-log":
       return "/refrigerant-log";
+    case "spray-foam-job-log":
+      return "/spray-foam-job-log";
     default:
       return "";
   }
