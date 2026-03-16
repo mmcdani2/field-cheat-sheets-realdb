@@ -28,6 +28,17 @@ function cleanString(value?: string | null) {
   return trimmed.length ? trimmed : null;
 }
 
+function cleanDecimal(value?: string | number | null) {
+  if (value === null || value === undefined) return null;
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? String(value) : null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
 export async function createRefrigerantLog(req: AuthedRequest, res: any) {
   try {
     const authUser = req.authUser;
@@ -41,6 +52,8 @@ export async function createRefrigerantLog(req: AuthedRequest, res: any) {
     const companyKey = cleanString(body.companyKey);
     const divisionKey = cleanString(body.divisionKey);
     const refrigerantType = cleanString(body.refrigerantType);
+    const poundsAdded = cleanDecimal(body.poundsAdded);
+    const poundsRecovered = cleanDecimal(body.poundsRecovered);
 
     if (!companyKey) {
       return res.status(400).json({ error: "companyKey is required." });
@@ -75,8 +88,8 @@ export async function createRefrigerantLog(req: AuthedRequest, res: any) {
         state: cleanString(body.state),
         equipmentType: cleanString(body.equipmentType),
         refrigerantType,
-        poundsAdded: body.poundsAdded ?? null,
-        poundsRecovered: body.poundsRecovered ?? null,
+        poundsAdded,
+        poundsRecovered,
         leakSuspected: Boolean(body.leakSuspected),
         notes: cleanString(body.notes),
       })

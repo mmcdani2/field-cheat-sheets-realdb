@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { API_BASE, getStoredToken } from "../lib/auth";
 import ReportsDivisionSelect from "./reports/ReportsDivisionSelect";
@@ -102,7 +103,10 @@ function SprayFoamLogCard({ log }: { log: SprayFoamLog }) {
   }, 0);
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
+    <Link
+      to={`/logs/${log.id}?type=spray-foam`}
+      className="block rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl transition hover:border-white/20 hover:bg-white/[0.07]"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="text-xl font-black tracking-tight text-white">
@@ -113,7 +117,7 @@ function SprayFoamLogCard({ log }: { log: SprayFoamLog }) {
           </div>
         </div>
 
-        <div className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">
+        <div className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">
           {log.lines.length} {log.lines.length === 1 ? "Line" : "Lines"}
         </div>
       </div>
@@ -138,23 +142,21 @@ function SprayFoamLogCard({ log }: { log: SprayFoamLog }) {
       <div className="mt-4 grid gap-3">
         {log.lines.map((line) => (
           <div key={line.id} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4">
-            <div className="text-sm font-semibold text-white">
-              {line.areaDescription}
-            </div>
+            <div className="text-sm font-semibold text-white">{line.areaDescription}</div>
             <div className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-orange-400">
               {line.jobType} · {line.foamType}
             </div>
             <div className="mt-2 text-sm text-white/65">
-              SF: {line.squareFeet || "0"}{" "}
+              SF: {line.squareFeet || "0"}
               <span className="mx-2 text-white/30">|</span>
-              Thickness: {line.thicknessInches || "0"}{" "}
+              Thickness: {line.thicknessInches || "0"}
               <span className="mx-2 text-white/30">|</span>
               BF: {line.boardFeet || "0"}
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -208,7 +210,7 @@ export default function LogsPage() {
       }
     }
 
-    loadDivisions();
+    void loadDivisions();
   }, []);
 
   const selectedDivision = useMemo(
@@ -251,7 +253,7 @@ export default function LogsPage() {
       }
     }
 
-    loadDivisionModules();
+    void loadDivisionModules();
   }, [selectedDivisionId]);
 
   useEffect(() => {
@@ -291,7 +293,7 @@ export default function LogsPage() {
       }
     }
 
-    loadRefrigerantLogs();
+    void loadRefrigerantLogs();
   }, [selectedDivision?.key]);
 
   useEffect(() => {
@@ -331,7 +333,7 @@ export default function LogsPage() {
       }
     }
 
-    loadSprayFoamLogs();
+    void loadSprayFoamLogs();
   }, [selectedDivision?.key]);
 
   const enabledModules = useMemo(

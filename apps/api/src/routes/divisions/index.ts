@@ -1,5 +1,5 @@
 ﻿import { Router } from "express";
-import { asc, eq, and } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { divisionModules, divisions, modules } from "../../db/schema.js";
 import {
@@ -8,6 +8,10 @@ import {
 } from "../../middleware/require-auth.js";
 
 const router = Router();
+
+function getSingleParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 router.get("/", requireAuth, async (_req: AuthedRequest, res) => {
   try {
@@ -33,7 +37,11 @@ router.get("/", requireAuth, async (_req: AuthedRequest, res) => {
 
 router.get("/:id/modules", requireAuth, async (req: AuthedRequest, res) => {
   try {
-    const divisionId = req.params.id;
+    const divisionId = getSingleParam(req.params.id);
+
+    if (!divisionId) {
+      return res.status(400).json({ error: "Division id is required." });
+    }
 
     const divisionRows = await db
       .select({
@@ -91,9 +99,17 @@ router.patch(
   requireAuth,
   async (req: AuthedRequest, res) => {
     try {
-      const divisionId = req.params.id;
-      const divisionModuleId = req.params.divisionModuleId;
+      const divisionId = getSingleParam(req.params.id);
+      const divisionModuleId = getSingleParam(req.params.divisionModuleId);
       const isEnabled = req.body?.isEnabled;
+
+      if (!divisionId) {
+        return res.status(400).json({ error: "Division id is required." });
+      }
+
+      if (!divisionModuleId) {
+        return res.status(400).json({ error: "Division module id is required." });
+      }
 
       if (typeof isEnabled !== "boolean") {
         return res.status(400).json({ error: "isEnabled must be a boolean." });
