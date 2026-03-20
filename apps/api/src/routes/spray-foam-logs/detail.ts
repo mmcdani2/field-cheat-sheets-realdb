@@ -4,6 +4,7 @@ import { db } from "../../db/index.js";
 import {
   sprayFoamJobLogLines,
   sprayFoamJobLogs,
+  sprayFoamMaterialLines,
 } from "../../db/schema.js";
 import {
   requireAuth,
@@ -44,16 +45,24 @@ router.get("/:id", requireAuth, async (req: AuthedRequest, res) => {
       return res.status(403).json({ error: "Forbidden." });
     }
 
-    const lines = await db
+    const areaLines = await db
       .select()
       .from(sprayFoamJobLogLines)
       .where(eq(sprayFoamJobLogLines.jobLogId, log.id))
       .orderBy(sprayFoamJobLogLines.lineNumber);
 
+    const materialLines = await db
+      .select()
+      .from(sprayFoamMaterialLines)
+      .where(eq(sprayFoamMaterialLines.jobLogId, log.id))
+      .orderBy(sprayFoamMaterialLines.lineNumber);
+
     return res.json({
       log: {
         ...log,
-        lines,
+        lines: areaLines,
+        areaLines,
+        materialLines,
       },
     });
   } catch (error) {

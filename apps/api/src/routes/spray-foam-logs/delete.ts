@@ -4,6 +4,7 @@ import { db } from "../../db/index.js";
 import {
   sprayFoamJobLogLines,
   sprayFoamJobLogs,
+  sprayFoamMaterialLines,
 } from "../../db/schema.js";
 import {
   requireAuth,
@@ -42,6 +43,10 @@ router.delete("/:id", requireAuth, async (req: AuthedRequest, res) => {
     if (!log) {
       return res.status(404).json({ error: "Log not found." });
     }
+
+    await db
+      .delete(sprayFoamMaterialLines)
+      .where(eq(sprayFoamMaterialLines.jobLogId, id));
 
     await db
       .delete(sprayFoamJobLogLines)

@@ -20,7 +20,7 @@ type RefrigerantLogDetail = {
   submittedAt: string;
 };
 
-type SprayFoamLogLineDetail = {
+type SprayFoamAreaLineDetail = {
   id: string;
   lineNumber: number;
   areaDescription: string;
@@ -29,7 +29,19 @@ type SprayFoamLogLineDetail = {
   squareFeet: string | null;
   thicknessInches: string | null;
   boardFeet: string | null;
-  notes: string | null;
+};
+
+type SprayFoamMaterialLineDetail = {
+  id: string;
+  lineNumber: number;
+  foamType: string;
+  manufacturer: string;
+  lotNumber: string;
+  setsUsed: string | null;
+  theoreticalYieldPerSet: string | null;
+  theoreticalTotalYield: string | null;
+  actualYield: string | null;
+  yieldPercent: string | null;
 };
 
 type SprayFoamLogDetail = {
@@ -39,11 +51,21 @@ type SprayFoamLogDetail = {
   companyKey: string;
   divisionKey: string | null;
   jobNumber: string | null;
-  city: string | null;
-  state: string | null;
-  notes: string | null;
+  jobDate: string | null;
+  crewLead: string | null;
+  helpersText: string | null;
+  rigName: string | null;
+  timeOnJob: string | null;
+  ambientTempF: string | null;
+  substrateTempF: string | null;
+  humidityPercent: string | null;
+  downtimeMinutes: number | null;
+  downtimeReason: string | null;
+  otherNotes: string | null;
+  photosUploadedToHcp: boolean;
   submittedAt: string;
-  lines: SprayFoamLogLineDetail[];
+  areaLines: SprayFoamAreaLineDetail[];
+  materialLines: SprayFoamMaterialLineDetail[];
 };
 
 type LogType = "refrigerant" | "spray-foam";
@@ -143,7 +165,7 @@ export default function LogDetailPage() {
     }
 
     const confirmed = window.confirm(
-      "Delete this spray foam job log permanently? This will also delete all line items."
+      "Delete this spray foam job log permanently? This will also delete area lines and material lines."
     );
 
     if (!confirmed) {
@@ -177,15 +199,30 @@ export default function LogDetailPage() {
     }
   }
 
-  const sprayFoamTotalBoardFeet = sprayFoamLog?.lines.reduce((sum, line) => {
+  const sprayFoamTotalBoardFeet = sprayFoamLog?.areaLines.reduce((sum, line) => {
     const value = line.boardFeet ? Number(line.boardFeet) : 0;
     return sum + (Number.isFinite(value) ? value : 0);
   }, 0);
 
+  const sprayFoamTotalSetsUsed = sprayFoamLog?.materialLines.reduce((sum, line) => {
+    const value = line.setsUsed ? Number(line.setsUsed) : 0;
+    return sum + (Number.isFinite(value) ? value : 0);
+  }, 0);
+
+  const sprayFoamTheoreticalTotalYield = sprayFoamLog?.materialLines.reduce((sum, line) => {
+    const value = line.theoreticalTotalYield ? Number(line.theoreticalTotalYield) : 0;
+    return sum + (Number.isFinite(value) ? value : 0);
+  }, 0);
+
+  const sprayFoamOverallYieldPercent =
+    sprayFoamTotalBoardFeet && sprayFoamTheoreticalTotalYield && sprayFoamTheoreticalTotalYield > 0
+      ? ((sprayFoamTotalBoardFeet / sprayFoamTheoreticalTotalYield) * 100).toFixed(2)
+      : "0.00";
+
   const kicker = logType === "spray-foam" ? "Urban Spray Foam" : "Urban Mechanical";
   const subtitle =
     logType === "spray-foam"
-      ? "Review the full spray foam job submission, job info, and all recorded line items."
+      ? "Review the full spray foam job submission, production output, and material usage."
       : "Review submission details, technician information, and recorded refrigerant activity.";
 
   return (
@@ -271,56 +308,115 @@ export default function LogDetailPage() {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <DetailRow label="Tech" value={sprayFoamLog.techNameSnapshot} />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <DetailRow label="Job Date" value={sprayFoamLog.jobDate} />
             <DetailRow label="Job Number" value={sprayFoamLog.jobNumber} />
+            <DetailRow label="Crew Lead" value={sprayFoamLog.crewLead} />
+            <DetailRow label="Helpers" value={sprayFoamLog.helpersText} />
+            <DetailRow label="Rig" value={sprayFoamLog.rigName} />
+            <DetailRow label="Time On Job" value={sprayFoamLog.timeOnJob} />
+            <DetailRow label="Ambient Temp (F)" value={sprayFoamLog.ambientTempF} />
+            <DetailRow label="Substrate Temp (F)" value={sprayFoamLog.substrateTempF} />
+            <DetailRow label="Humidity (%)" value={sprayFoamLog.humidityPercent} />
+            <DetailRow label="Downtime Minutes" value={sprayFoamLog.downtimeMinutes} />
+            <DetailRow label="Downtime Reason" value={sprayFoamLog.downtimeReason} />
             <DetailRow
-              label="Location"
-              value={[sprayFoamLog.city, sprayFoamLog.state].filter(Boolean).join(", ")}
+              label="Photos Uploaded To HCP"
+              value={sprayFoamLog.photosUploadedToHcp ? "Yes" : "No"}
             />
-            <DetailRow label="Company Key" value={sprayFoamLog.companyKey} />
-            <DetailRow label="Division Key" value={sprayFoamLog.divisionKey} />
-            <DetailRow label="Line Count" value={sprayFoamLog.lines.length} />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <DetailRow label="Area Line Count" value={sprayFoamLog.areaLines.length} />
             <DetailRow
               label="Total Board Feet"
               value={sprayFoamTotalBoardFeet ? sprayFoamTotalBoardFeet.toFixed(2) : "0.00"}
             />
+            <DetailRow
+              label="Total Sets Used"
+              value={sprayFoamTotalSetsUsed ? sprayFoamTotalSetsUsed.toFixed(2) : "0.00"}
+            />
+            <DetailRow label="Overall Yield %" value={`${sprayFoamOverallYieldPercent}%`} />
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl">
             <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
-              Job Notes
+              Other Notes
             </div>
             <div className="mt-3 text-sm leading-7 text-white/75">
-              {sprayFoamLog.notes || "No notes submitted."}
+              {sprayFoamLog.otherNotes || "No notes submitted."}
             </div>
           </div>
 
           <div className="grid gap-4">
-            {sprayFoamLog.lines.map((line) => (
+            <div className="rounded-3xl border border-white/10 bg-[#141414] p-5 shadow-2xl">
+              <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
+                Area Lines
+              </div>
+              <h3 className="mt-3 text-2xl font-black tracking-tight text-white">
+                Installed output
+              </h3>
+            </div>
+
+            {sprayFoamLog.areaLines.map((line) => (
               <div
                 key={line.id}
                 className="rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
-                      Line {line.lineNumber}
-                    </div>
-                    <h3 className="mt-2 text-xl font-black tracking-tight text-white">
-                      {line.areaDescription}
-                    </h3>
-                    <div className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-white/55">
-                      {line.jobType} · {line.foamType}
-                    </div>
-                  </div>
+                <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
+                  Area Line {line.lineNumber}
+                </div>
+                <h3 className="mt-2 text-xl font-black tracking-tight text-white">
+                  {line.areaDescription}
+                </h3>
+                <div className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-white/55">
+                  {line.jobType} · {line.foamType}
                 </div>
 
-                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   <DetailRow label="Square Feet" value={line.squareFeet} />
-                  <DetailRow label="Thickness (Inches)" value={line.thicknessInches} />
+                  <DetailRow label="Average Thickness (Inches)" value={line.thicknessInches} />
                   <DetailRow label="Board Feet" value={line.boardFeet} />
-                  <DetailRow label="Notes" value={line.notes} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4">
+            <div className="rounded-3xl border border-white/10 bg-[#141414] p-5 shadow-2xl">
+              <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
+                Material Lines
+              </div>
+              <h3 className="mt-3 text-2xl font-black tracking-tight text-white">
+                Actual material usage
+              </h3>
+            </div>
+
+            {sprayFoamLog.materialLines.map((line) => (
+              <div
+                key={line.id}
+                className="rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 shadow-2xl"
+              >
+                <div className="text-[12px] font-bold uppercase tracking-[0.24em] text-orange-400">
+                  Material Line {line.lineNumber}
+                </div>
+                <h3 className="mt-2 text-xl font-black tracking-tight text-white">
+                  {line.manufacturer}
+                </h3>
+                <div className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-white/55">
+                  {line.foamType}
+                </div>
+
+                <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <DetailRow label="Lot Number" value={line.lotNumber} />
+                  <DetailRow label="Sets Used" value={line.setsUsed} />
+                  <DetailRow label="Theoretical Yield / Set" value={line.theoreticalYieldPerSet} />
+                  <DetailRow label="Theoretical Total Yield" value={line.theoreticalTotalYield} />
+                  <DetailRow label="Actual Yield" value={line.actualYield} />
+                  <DetailRow
+                    label="Yield Percent"
+                    value={line.yieldPercent ? `${line.yieldPercent}%` : "N/A"}
+                  />
                 </div>
               </div>
             ))}
