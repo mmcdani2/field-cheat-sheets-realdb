@@ -5,10 +5,9 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { divisionModules, divisions, modules, users } from "../../db/schema.js";
 import { requireAuth, type AuthedRequest } from "../../middleware/require-auth.js";
+import { getJwtSecret } from "../../lib/get-jwt-secret.js";
 
 const router = Router();
-
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
 const MODULES_BY_DIVISION: Record<string, string[]> = {
   hvac: ["quick-estimate-calculator", "refrigerant-log", "reimbursement-request"],
@@ -47,9 +46,8 @@ router.post("/login", async (req, res) => {
         sub: user.id,
         email: user.email,
         role: user.role,
-        fullName: user.fullName,
       },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: "7d" }
     );
 
