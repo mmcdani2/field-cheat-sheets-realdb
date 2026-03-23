@@ -44,7 +44,9 @@ export default function LogsPage() {
         setDivisions(nextDivisions);
 
         if (nextDivisions.length > 0) {
-          const hvacDivision = nextDivisions.find((division: Division) => division.key === "hvac");
+          const hvacDivision = nextDivisions.find(
+            (division: Division) => division.key === "hvac",
+          );
           setSelectedDivisionId(hvacDivision?.id || nextDivisions[0].id);
         }
       } catch {
@@ -59,7 +61,7 @@ export default function LogsPage() {
 
   const selectedDivision = useMemo(
     () => divisions.find((division) => division.id === selectedDivisionId) || null,
-    [divisions, selectedDivisionId]
+    [divisions, selectedDivisionId],
   );
 
   useEffect(() => {
@@ -76,11 +78,14 @@ export default function LogsPage() {
         setError("");
 
         const token = getStoredToken();
-        const res = await fetch(`${API_BASE}/api/divisions/${selectedDivisionId}/modules`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const res = await fetch(
+          `${API_BASE}/api/divisions/${selectedDivisionId}/modules`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         const data = await res.json();
 
@@ -104,7 +109,7 @@ export default function LogsPage() {
 
   const enabledModules = useMemo(
     () => modules.filter((row) => row.isEnabled && row.module.isActive),
-    [modules]
+    [modules],
   );
 
   const moduleItems = enabledModules.map((row) => ({
@@ -165,21 +170,21 @@ export default function LogsPage() {
               />
             ) : null}
 
-            {showingRefrigerantRecords && selectedDivision?.key ? (
+            {showingRefrigerantRecords && selectedDivision.key ? (
               <RefrigerantRecordsPanel
                 divisionKey={selectedDivision.key}
                 onBack={() => setSelectedModuleKey("")}
               />
             ) : null}
 
-            {showingSprayFoamRecords && selectedDivision?.key ? (
+            {showingSprayFoamRecords && selectedDivision.key ? (
               <SprayFoamRecordsPanel
                 divisionKey={selectedDivision.key}
                 onBack={() => setSelectedModuleKey("")}
               />
             ) : null}
 
-            {showingReimbursementRequests && selectedDivision?.key ? (
+            {showingReimbursementRequests && selectedDivision.key ? (
               <ReimbursementRequestsPanel
                 divisionKey={selectedDivision.key}
                 onBack={() => setSelectedModuleKey("")}

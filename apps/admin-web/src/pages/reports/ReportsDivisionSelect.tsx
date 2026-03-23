@@ -6,7 +6,11 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-export default function ReportsDivisionSelect({ divisions, value, onChange }: Props) {
+export default function ReportsDivisionSelect({
+  divisions,
+  value,
+  onChange,
+}: Props) {
   return (
     <div className="grid gap-2">
       <label className="text-sm font-semibold uppercase tracking-[0.18em] text-white/75">
