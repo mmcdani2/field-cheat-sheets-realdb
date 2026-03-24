@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AdminSidebar from "../components/shell/AdminSidebar";
 import AdminTopbar from "../components/shell/AdminTopbar";
+import { useAuth } from "../context/AuthContext";
 import { useCompany } from "../context/CompanyContext";
 import { clearStoredToken } from "../lib/auth";
 import { adminNavItems } from "../lib/nav";
@@ -23,7 +24,9 @@ export default function AdminShellLayout({
   const location = useLocation();
   const navigate = useNavigate();
   const { company } = useCompany();
+  const { user } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const appVersion = import.meta.env.VITE_APP_VERSION || "v0.1.0";
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -62,6 +65,9 @@ export default function AdminShellLayout({
                 items={adminNavItems}
                 pathname={location.pathname}
                 onLogout={handleLogout}
+                currentUserName={user?.fullName}
+                currentUserEmail={user?.email}
+                appVersion={appVersion}
               />
             </aside>
 
@@ -94,13 +100,8 @@ export default function AdminShellLayout({
           />
           <div className="absolute inset-y-0 left-0 flex w-[88vw] max-w-[320px] min-h-0 flex-col border-r border-white/10 bg-[#0f0f0f] shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
             <div className="shrink-0 flex items-center justify-between border-b border-white/10 px-5 py-4">
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-400/80">
-                  BossOS
-                </div>
-                <div className="mt-1 text-lg font-semibold tracking-tight text-white">
-                  Navigation
-                </div>
+              <div className="text-lg font-semibold tracking-tight text-white">
+                Navigation
               </div>
 
               <button
@@ -119,6 +120,9 @@ export default function AdminShellLayout({
                 pathname={location.pathname}
                 onNavigate={() => setMobileNavOpen(false)}
                 onLogout={handleLogout}
+                currentUserName={user?.fullName}
+                currentUserEmail={user?.email}
+                appVersion={appVersion}
               />
             </div>
           </div>

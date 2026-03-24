@@ -6,14 +6,36 @@ type FieldSidebarProps = {
   pathname: string;
   onNavigate?: () => void;
   onLogout: () => void;
+  currentUserName?: string | null;
+  currentUserEmail?: string | null;
+  appVersion: string;
 };
+
+function getInitials(name?: string | null, email?: string | null) {
+  const source = (name || email || "?").trim();
+
+  if (!source) return "?";
+
+  const parts = source.split(/\s+/).filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+  }
+
+  return source.slice(0, 2).toUpperCase();
+}
 
 export default function FieldSidebar({
   items,
   pathname,
   onNavigate,
   onLogout,
+  currentUserName,
+  currentUserEmail,
+  appVersion,
 }: FieldSidebarProps) {
+  const initials = getInitials(currentUserName, currentUserEmail);
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0f0f0f] text-white">
       <div className="shrink-0 border-b border-white/10 px-5 py-5">
@@ -62,13 +84,26 @@ export default function FieldSidebar({
       </nav>
 
       <div className="shrink-0 border-t border-white/10 px-4 py-4">
-        <div className="rounded-2xl border border-white/10 bg-white/3 px-4 py-3">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-            Current shell
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-sm font-bold text-white">
+              {initials}
+            </div>
+
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold text-white">
+                {currentUserName || "Signed in"}
+              </div>
+              <div className="truncate text-xs text-white/45">
+                {currentUserEmail || "No email available"}
+              </div>
+            </div>
           </div>
-          <p className="mt-2 text-sm text-white/65">
-            Compatibility wrapper around the current field workflows.
-          </p>
+
+          <div className="mt-4 flex items-center justify-between text-xs text-white/45">
+            <span>Version</span>
+            <span>{appVersion}</span>
+          </div>
 
           <button
             type="button"

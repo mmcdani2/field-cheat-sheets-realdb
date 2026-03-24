@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FieldSidebar from "../components/shell/FieldSidebar";
 import FieldTopbar from "../components/shell/FieldTopbar";
+import { useAuth } from "../context/AuthContext";
 import { clearStoredToken } from "../lib/auth";
 import { fieldNavItems } from "../lib/nav";
 
@@ -21,7 +22,9 @@ export default function FieldShellLayout({
 }: FieldShellLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const appVersion = import.meta.env.VITE_APP_VERSION || "v0.1.0";
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -56,14 +59,17 @@ export default function FieldShellLayout({
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="mx-auto max-w-[1600px] px-3 py-3 sm:px-5 sm:py-5">
-        <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+      <div className="mx-auto max-w-[1600px] px-2 py-2 sm:px-5 sm:py-5">
+        <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[#111111] shadow-[0_20px_80px_rgba(0,0,0,0.45)] sm:rounded-[28px]">
           <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="hidden h-[calc(100vh-24px)] min-h-0 border-r border-white/10 lg:block sm:h-[calc(100vh-40px)]">
+            <aside className="hidden h-[calc(100vh-16px)] min-h-0 border-r border-white/10 lg:block sm:h-[calc(100vh-40px)]">
               <FieldSidebar
                 items={fieldNavItems}
                 pathname={location.pathname}
                 onLogout={handleLogout}
+                currentUserName={user?.fullName}
+                currentUserEmail={user?.email}
+                appVersion={appVersion}
               />
             </aside>
 
@@ -75,7 +81,7 @@ export default function FieldShellLayout({
                 onOpenMobileNav={() => setMobileNavOpen(true)}
               />
 
-              <main className="min-w-0 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+              <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
                 <div className="mx-auto w-full max-w-[1200px] min-w-0">
                   {children}
                 </div>
@@ -95,13 +101,8 @@ export default function FieldShellLayout({
           />
           <div className="absolute inset-y-0 left-0 flex w-[88vw] max-w-[320px] min-h-0 flex-col border-r border-white/10 bg-[#0f0f0f] shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
             <div className="shrink-0 flex items-center justify-between border-b border-white/10 px-5 py-4">
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-orange-400/80">
-                  BossOS
-                </div>
-                <div className="mt-1 text-lg font-semibold tracking-tight text-white">
-                  Navigation
-                </div>
+              <div className="text-lg font-semibold tracking-tight text-white">
+                Navigation
               </div>
 
               <button
@@ -120,6 +121,9 @@ export default function FieldShellLayout({
                 pathname={location.pathname}
                 onNavigate={() => setMobileNavOpen(false)}
                 onLogout={handleLogout}
+                currentUserName={user?.fullName}
+                currentUserEmail={user?.email}
+                appVersion={appVersion}
               />
             </div>
           </div>

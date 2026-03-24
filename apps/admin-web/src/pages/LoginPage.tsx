@@ -44,7 +44,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="flex min-h-screen items-center bg-black text-white">
       <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6 sm:py-8">
         <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
           <div className="px-5 py-6 sm:px-6 sm:py-8">
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 Admin Login
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">
-                Sign in to review logs, technician activity, and field submissions.
+                Sign in to manage operations, users, logs, divisions, and settings.
               </p>
             </section>
 
@@ -122,3 +122,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
