@@ -170,7 +170,7 @@ export default function ReimbursementRequestDetailPage() {
                     {request.techNameSnapshot}
                   </h2>
                   <p className="mt-2 text-sm text-white/65 sm:text-base">
-                    {request.vendor} Ã¢â‚¬Â¢ {request.purchaseDate}
+                    {request.vendor}  {request.purchaseDate}
                   </p>
                 </div>
 
