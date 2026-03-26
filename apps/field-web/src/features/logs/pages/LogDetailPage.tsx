@@ -90,7 +90,7 @@ export default function LogDetailPage () {
 
       {loading ? (
         <div className='rounded-3xl border border-white/10 bg-[#1a1a1a] p-5 text-white/70 shadow-2xl'>
-          Loading log...
+          Loading log..
         </div>
       ) : null}
 
