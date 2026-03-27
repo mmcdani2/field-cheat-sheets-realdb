@@ -36,7 +36,7 @@ export default function QuickEstimateSettingsSection({
 
       {loading ? (
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-white/70">
-          Loading division settings...
+          Loading division settings..
         </div>
       ) : (
         <div className="mt-4 grid gap-4">
